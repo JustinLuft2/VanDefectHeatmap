@@ -9,18 +9,18 @@
     "supportUrl": "none",
     "gitHubUrl": ""
   },
-  "apiVersion": "5.3.0",
+  "apiVersion": "2.6.0",
   "author": {
     "name": "Justin Luft",
     "email": "justin.luft@mercedes-benz.com"
   },
   "assets": {
-    "icon": "assets/icon.png"
+    "icon": "assets/icon.png",
+    "vanFront": "assets/van_front.png"
   },
   "externalJS": null,
   "style": "style/visual.less",
   "capabilities": "capabilities.json",
   "dependencies": null,
-  "stringResources": [],
-  "version": "1.0.0.0"
+  "stringResources": []
 }
