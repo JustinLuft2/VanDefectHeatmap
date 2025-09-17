@@ -1,16 +1,16 @@
 import powerbi from "powerbi-visuals-api";
 
 export interface VanHeatmapSettings {
-    markerColor: string;
     markerSize: number;
-    vanSide: "front" | "back" | "left" | "right" | "roof";
+    markerColor: string;       // default fallback color
+    customColors: string[];    // array of custom colors
 }
 
 export class VisualSettings {
     public markers: VanHeatmapSettings = {
-        markerColor: "#FF0000", // Default red
+        markerColor: "#FF0000", // default red
         markerSize: 10,
-        vanSide: "front"
+        customColors: []         // empty array by default
     };
 
     /**
@@ -28,7 +28,11 @@ export class VisualSettings {
 
             settings.markers.markerColor = String(markersObj["markerColor"] ?? settings.markers.markerColor);
             settings.markers.markerSize = Number(markersObj["markerSize"] ?? settings.markers.markerSize);
-            settings.markers.vanSide = String(markersObj["vanSide"] ?? settings.markers.vanSide) as VanHeatmapSettings["vanSide"];
+
+            // If customColors exists in objects, ensure it's an array
+            if (markersObj["customColors"] && Array.isArray(markersObj["customColors"])) {
+                settings.markers.customColors = markersObj["customColors"].map(c => String(c));
+            }
         }
 
         return settings;
