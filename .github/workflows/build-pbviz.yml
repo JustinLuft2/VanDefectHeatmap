@@ -1,10 +1,10 @@
-name: Build PBIVIZ 🎨🔥
+name: HeatMap Visual Creation 🎨
 
 on:
   push:
     branches: [ "main" ]
 
-# Allow pushing changes back to the repo
+# Allow workflow to push back to repo
 permissions:
   contents: write
 
@@ -72,28 +72,31 @@ jobs:
           git add install_count.txt
           git commit -m "Increment install count to ${{ steps.inc.outputs.count }} ✅"
           git push
-        continue-on-error: true  # Skip if nothing to commit
+        continue-on-error: true
 
       # ---------------------------------------------------------
-      # 📂 Move & Rename Output File into VisualDownload/ and commit
+      # 📂 Move & Commit PBIVIZ to Repo
       # ---------------------------------------------------------
       - name: Move & Commit PBIVIZ to Repo 📁➡️📦
         run: |
+          # Ensure folder exists
           mkdir -p VisualDownload
+
+          # Move and rename the .pbiviz
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
           mv vanHeatmap/dist/*.pbiviz "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Commit the .pbiviz to the repo
+          # Commit to repo with descriptive message
           git config --global user.email "action@github.com"
           git config --global user.name "Github Action Bot"
           git add VisualDownload/*.pbiviz
-          git commit -m "Add $OUTPUT_NAME to VisualDownload folder ✅"
+          git commit -m "Download heatmap here ✅ (${OUTPUT_NAME})"
           git push
-        continue-on-error: true  # Skip if already committed
+        continue-on-error: true
 
       # ---------------------------------------------------------
-      # ☁ Upload artifact for debugging / backup
+      # ☁ Upload artifact for backup / debugging
       # ---------------------------------------------------------
       - name: Upload PBIVIZ Artifact ☁
         uses: actions/upload-artifact@v4
