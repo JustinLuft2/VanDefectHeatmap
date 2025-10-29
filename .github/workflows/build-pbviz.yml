@@ -3,6 +3,7 @@ name: HeatMap Visual Creation 🎨
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:  # ✅ Allows manual run
 
 # Allow workflow to push back to repo
 permissions:
@@ -60,17 +61,17 @@ jobs:
           NEW_COUNT=$((COUNT + 1))
           echo $NEW_COUNT > install_count.txt
           echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
-          echo "✅ Install Count Updated: $NEW_COUNT"
+          echo "Install Count Updated: $NEW_COUNT"
 
       # ---------------------------------------------------------
-      # ♻ Commit Updated Counter
+      # ♻ Commit Updated Counter (no check emoji)
       # ---------------------------------------------------------
       - name: Commit Install Counter Update 💾
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "Github Action Bot"
           git add install_count.txt
-          git commit -m "Increment install count to ${{ steps.inc.outputs.count }} ✅"
+          git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
           git push
         continue-on-error: true
 
@@ -81,6 +82,7 @@ jobs:
         run: |
           # Ensure folder exists
           mkdir -p VisualDownload
+          echo "📥 Download heatmap here"
 
           # Move and rename the .pbiviz
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
