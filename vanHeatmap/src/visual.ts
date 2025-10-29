@@ -17,7 +17,7 @@ export class Visual implements powerbi.extensibility.visual.IVisual {
     // You can tweak all heatmap appearance settings here.
     private config = {
         markerSize: 5,          // Dot radius in px
-        markerOpacity: 0.6,     // Dot fill opacity (0–1)
+        markerOpacity: 0.75,     // Dot fill opacity (0–1)
         glowSize: 6,            // Strength of glow blur
         densityRadius: 12,      // Radius used for local density
         colorMin: "#ffffb2",    // Color for low-density (light yellow)
