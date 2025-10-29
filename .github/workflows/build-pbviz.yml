@@ -22,13 +22,17 @@ jobs:
       - name: Install Power BI Visual Tools
         run: npm install -g powerbi-visuals-tools
 
+      # ✅ Install dependencies inside vanHeatmap
       - name: Install Dependencies
         run: npm install
+        working-directory: vanHeatmap
 
+      # ✅ Build .pbiviz inside vanHeatmap
       - name: Build .pbiviz
         run: pbiviz package
+        working-directory: vanHeatmap
 
-      # ✅ Read installation count, increment, and expose as variable
+      # ✅ Read + increment installation counter
       - name: Read and Increment Install Count
         id: inc
         run: |
@@ -37,7 +41,7 @@ jobs:
           echo $NEW_COUNT > install_count.txt
           echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
 
-      # ✅ Commit updated count back to repo so it persists
+      # ✅ Commit updated install_count.txt back to repo
       - name: Commit Install Counter Update
         run: |
           git config --global user.email "action@github.com"
@@ -46,14 +50,15 @@ jobs:
           git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
           git push
 
-      # ✅ Rename .pbiviz using count number
-      - name: Rename PBIVIZ Output
+      # ✅ Ensure VisualDownload folder exists + move + rename file there
+      - name: Move and Rename PBIVIZ
         run: |
-          mv dist/*.pbiviz "dist/HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
+          mkdir -p VisualDownload
+          mv vanHeatmap/dist/*.pbiviz "VisualDownload/HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
 
-      # ✅ Upload build result
+      # ✅ Upload artifact for download in GitHub Actions
       - name: Upload PBIVIZ Artifact
         uses: actions/upload-artifact@v4
         with:
           name: HeatMap_Installation
-          path: dist/*.pbiviz
+          path: VisualDownload/*.pbiviz
