@@ -1,7 +1,7 @@
 {
   "dataRoles": [
-    { "displayName": "X Coordinate", "name": "x", "kind": "Grouping" },
-    { "displayName": "Y Coordinate", "name": "y", "kind": "Grouping" }
+    { "displayName": "X Coordinates", "name": "x", "kind": "Grouping" },
+    { "displayName": "Y Coordinates", "name": "y", "kind": "Grouping" }
   ],
   "dataViewMappings": [
     {
