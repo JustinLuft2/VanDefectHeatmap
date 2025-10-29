@@ -1,10 +1,8 @@
 name: HeatMap Visual Creation 🎨
 
-# Only allow manual runs
 on:
-  workflow_dispatch:  # ✅ Allows manual run only
+  workflow_dispatch:
 
-# Allow workflow to push back to repo
 permissions:
   contents: write
 
@@ -13,59 +11,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------------------
-      # 📥 Checkout Repo
-      # ---------------------------------------------------------
       - name: Checkout Repository 📦
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ---------------------------------------------------------
-      # 🟢 Node Setup
-      # ---------------------------------------------------------
       - name: Set up Node 🧱
         uses: actions/setup-node@v4
         with:
           node-version: 16
 
-      # ---------------------------------------------------------
-      # 🛠 Install Power BI Visual Tools
-      # ---------------------------------------------------------
       - name: Install Power BI Visual Tools 🔧
         run: npm install -g powerbi-visuals-tools
 
-      # ---------------------------------------------------------
-      # 📦 Install Visual Dependencies
-      # ---------------------------------------------------------
       - name: Install Dependencies 📚
         run: npm install
         working-directory: vanHeatmap
 
-      # ---------------------------------------------------------
-      # 🏗 Build Power BI Visual (.pbiviz)
-      # ---------------------------------------------------------
       - name: Build .pbiviz 🏁
         run: pbiviz package --no-minify --verbose
         working-directory: vanHeatmap
 
-      # ---------------------------------------------------------
-      # 🔢 Read + Increment Install Count
-      # ---------------------------------------------------------
-      - name: Read and Increment Install Count 🔄
+      - name: List dist folder 🔍
+        run: ls -l vanHeatmap/dist
+
+      - name: Read and Increment Install Count 🔢
         id: inc
         run: |
-          echo "📊 Reading current install count..."
           COUNT=$(cat install_count.txt)
           NEW_COUNT=$((COUNT + 1))
           echo $NEW_COUNT > install_count.txt
           echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
-          echo "Install Count Updated: $NEW_COUNT"
 
-      # ---------------------------------------------------------
-      # ♻ Commit Updated Counter
-      # ---------------------------------------------------------
-      - name: Commit Install Counter Update 💾
+      - name: Commit Install Counter 💾
         run: |
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action Bot"
@@ -73,43 +51,37 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
             git push
-          else
-            echo "No changes to commit."
           fi
 
-      # ---------------------------------------------------------
-      # 📂 Prepare & Commit PBIVIZ (latest only)
-      # ---------------------------------------------------------
-      - name: Prepare & Commit PBIVIZ 📁➡️📦
+      - name: Prepare & Commit PBIVIZ 📂
         run: |
           mkdir -p VisualDownload
-          echo "📥 Preparing heatmap download..."
+          OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
 
-          # Remove old PBIVIZ files from Git and disk
+          # Find the built PBIVIZ file
+          PBIVIZ_FILE=$(ls vanHeatmap/dist/*.pbiviz 2>/dev/null | head -n1)
+          if [ -z "$PBIVIZ_FILE" ]; then
+            echo "❌ No PBIVIZ file found! Build may have failed."
+            exit 1
+          fi
+
+          # Remove old PBIVIZ from Git and disk
           git rm -f VisualDownload/*.pbiviz || true
           rm -vf VisualDownload/*.pbiviz || true
 
-          # Move and rename new PBIVIZ
-          OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
-          mv vanHeatmap/dist/*.pbiviz "VisualDownload/$OUTPUT_NAME"
+          # Move new PBIVIZ
+          mv "$PBIVIZ_FILE" "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Stage all changes (new + deletions)
+          # Stage and commit
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action Bot"
           git add -A VisualDownload
-
-          # Commit and push only if there are changes
           if ! git diff --cached --quiet; then
             git commit -m "Update HeatMap visual ✅ (${OUTPUT_NAME})"
             git push
-          else
-            echo "No changes to commit."
           fi
 
-      # ---------------------------------------------------------
-      # ☁ Upload PBIVIZ Artifact for backup / debugging
-      # ---------------------------------------------------------
       - name: Upload PBIVIZ Artifact ☁
         uses: actions/upload-artifact@v4
         with:
