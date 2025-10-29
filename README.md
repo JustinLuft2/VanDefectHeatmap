@@ -3,6 +3,7 @@
 ![VanHeatmap Logo](vanHeatmap/assets/icon2.png)
 
 A Power BI custom visual that displays defect points as a heatmap.
+Developed by Mercedes-Benz Production System.
 
 ## Features
 
@@ -23,8 +24,8 @@ A Power BI custom visual that displays defect points as a heatmap.
 
 ## Usage
 
-* Prepare a dataset with `x` and `y` as percentages (0–100).
-* For best results, use values in the **5–95% range**.
+* Prepare a dataset with `x` and `y` as normalized values between 0–100.
+* For best results, use values in the **5–95 range**.
 * Add the visual to your Power BI report.
 * Map `x` → X-axis, `y` → Y-axis.
 
