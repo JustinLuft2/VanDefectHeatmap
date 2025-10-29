@@ -1,0 +1,37 @@
+name: Build PBIVIZ
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+          cache: 'npm'
+
+      - name: Install Power BI Visual Tools
+        run: npm install -g powerbi-visuals-tools
+
+      - name: Install Project Dependencies
+        run: npm install
+
+      - name: Build Visual
+        run: pbiviz package
+        # If you want to overwrite existing build folder on repeat:
+        # run: pbiviz package --no-minify --overwrite
+
+      - name: Upload PBIVIZ Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerbi-visual-build
+          path: dist/*.pbiviz
