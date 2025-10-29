@@ -3,6 +3,8 @@
 ![VanHeatmap Logo](vanHeatmap/assets/icon2.png)
 
 A Power BI custom visual that displays defect points as a heatmap.
+
+
 Developed by Mercedes-Benz Production System.
 
 ## Features
