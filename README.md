@@ -1,12 +1,15 @@
 # VanHeatmap – Power BI Custom Heatmap Visual
 
-A simple Power BI custom visual that shows defect points as a heatmap.
+![VanHeatmap Logo](vanHeatmap/assets/icon.png)
+
+A Power BI custom visual that displays defect points as a heatmap.
 
 ## Features
 
 * Heatmap of defects using colored dots.
 * Dot size, color, and glow are configurable.
 * Density-based coloring.
+* Recommended data range for best results: **5–95%** for both `x` and `y` values.
 * Ready to use with GitHub Actions.
 
 ## Installation
@@ -21,6 +24,7 @@ A simple Power BI custom visual that shows defect points as a heatmap.
 ## Usage
 
 * Prepare a dataset with `x` and `y` as percentages (0–100).
+* For best results, use values in the **5–95% range**.
 * Add the visual to your Power BI report.
 * Map `x` → X-axis, `y` → Y-axis.
 
