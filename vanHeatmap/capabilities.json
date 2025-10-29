@@ -1,51 +1,23 @@
 {
-  // ------------------------------
-  // Define the roles of the data fields your visual expects
-  // ------------------------------
   "dataRoles": [
-    {
-      "displayName": "X Coordinate", // Friendly name shown in Power BI
-      "name": "x",                    // Internal identifier used in dataViewMappings
-      "kind": "Grouping"              // This field is categorical/grouping (not measure)
-    },
-    {
-      "displayName": "Y Coordinate",
-      "name": "y",
-      "kind": "Grouping"
-    }
+    { "displayName": "X Coordinate", "name": "x", "kind": "Grouping" },
+    { "displayName": "Y Coordinate", "name": "y", "kind": "Grouping" }
   ],
-
-  // ------------------------------
-  // Map the data roles to how the visual will access the data
-  // ------------------------------
   "dataViewMappings": [
     {
       "categorical": {
         "categories": {
-          "select": [
-            { "for": { "in": "x" } }, // Bind first category to x coordinate
-            { "for": { "in": "y" } }  // Bind second category to y coordinate
-          ]
+          "select": [ { "for": { "in": "x" } }, { "for": { "in": "y" } } ]
         }
       }
     }
   ],
-
-  // ------------------------------
-  // Define customizable objects (properties) for formatting
-  // ------------------------------
   "objects": {
-    "markers": {                     // Object container for marker settings
-      "displayName": "Marker Settings", 
+    "markers": {
+      "displayName": "Marker Settings",
       "properties": {
-        "markerColor": {             // Color of the marker
-          "displayName": "Marker Color",
-          "type": { "fill": { "solid": { "color": true } } } // Solid fill color
-        },
-        "markerSize": {              // Size of the marker
-          "displayName": "Marker Size",
-          "type": { "numeric": true } // Numeric value
-        }
+        "markerColor": { "displayName": "Marker Color", "type": { "fill": { "solid": { "color": true } } } },
+        "markerSize": { "displayName": "Marker Size", "type": { "numeric": true } }
       }
     }
   }
