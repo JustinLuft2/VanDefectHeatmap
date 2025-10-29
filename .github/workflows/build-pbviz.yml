@@ -1,63 +1,95 @@
-name: Build PBIVIZ
+name: Build PBIVIZ 🎨🔥
 
 on:
   push:
     branches: [ "main" ]
+
+# ✅ Allow this workflow to push install_count.txt updates back to the repo
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      # ---------------------------------------------------------
+      # 📥 Checkout Repo
+      # ---------------------------------------------------------
+      - name: Checkout Repository 📦
         uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          token: ${{ secrets.GITHUB_TOKEN }}  # ✅ Enables pushing changes
 
-      - name: Set up Node
+      # ---------------------------------------------------------
+      # 🟢 Node Setup
+      # ---------------------------------------------------------
+      - name: Set up Node 🧱
         uses: actions/setup-node@v4
         with:
           node-version: 16
 
-      - name: Install Power BI Visual Tools
+      # ---------------------------------------------------------
+      # 🛠 Install Tools
+      # ---------------------------------------------------------
+      - name: Install Power BI Visual Tools 🔧
         run: npm install -g powerbi-visuals-tools
 
-      # ✅ Install dependencies inside vanHeatmap
-      - name: Install Dependencies
+      # ---------------------------------------------------------
+      # 📦 Install Visual Dependencies
+      # ---------------------------------------------------------
+      - name: Install Dependencies 📚
         run: npm install
         working-directory: vanHeatmap
 
-      # ✅ Build .pbiviz inside vanHeatmap
-      - name: Build .pbiviz
-        run: pbiviz package
+      # ---------------------------------------------------------
+      # 🏗 Build Power BI Visual (.pbiviz)
+      # ---------------------------------------------------------
+      - name: Build .pbiviz 🏁
+        run: pbiviz package --no-minify --verbose
         working-directory: vanHeatmap
 
-      # ✅ Read + increment installation counter
-      - name: Read and Increment Install Count
+      # ---------------------------------------------------------
+      # 🔢 Read + Increment Install Count
+      # ---------------------------------------------------------
+      - name: Read and Increment Install Count 🔄
         id: inc
         run: |
+          echo "📊 Reading current install count..."
           COUNT=$(cat install_count.txt)
           NEW_COUNT=$((COUNT + 1))
           echo $NEW_COUNT > install_count.txt
           echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+          echo "✅ Install Count Updated: $NEW_COUNT"
 
-      # ✅ Commit updated install_count.txt back to repo
-      - name: Commit Install Counter Update
+      # ---------------------------------------------------------
+      # ♻ Commit Updated Counter
+      # ---------------------------------------------------------
+      - name: Commit Install Counter Update 💾
         run: |
+          echo "🔐 Configuring Git identity..."
           git config --global user.email "action@github.com"
-          git config --global user.name "Github Action"
+          git config --global user.name "Github Action Bot"
+          echo "📤 Saving updated install_count.txt..."
           git add install_count.txt
-          git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
+          git commit -m "Increment install count to ${{ steps.inc.outputs.count }} ✅"
           git push
+        continue-on-error: true  # Prevent workflow from failing if no changes
 
-      # ✅ Ensure VisualDownload folder exists + move + rename file there
-      - name: Move and Rename PBIVIZ
+      # ---------------------------------------------------------
+      # 📂 Move & Rename Output File
+      # ---------------------------------------------------------
+      - name: Move and Rename PBIVIZ 📁➡️📦
         run: |
           mkdir -p VisualDownload
-          mv vanHeatmap/dist/*.pbiviz "VisualDownload/HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
+          OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
+          mv vanHeatmap/dist/*.pbiviz "VisualDownload/$OUTPUT_NAME"
+          echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-      # ✅ Upload artifact for download in GitHub Actions
-      - name: Upload PBIVIZ Artifact
+      # ---------------------------------------------------------
+      # ☁ Make Available As CI Artifact
+      # ---------------------------------------------------------
+      - name: Upload PBIVIZ Artifact ☁
         uses: actions/upload-artifact@v4
         with:
           name: HeatMap_Installation
