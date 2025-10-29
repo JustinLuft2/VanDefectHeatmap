@@ -1,6 +1,6 @@
 # VanHeatmap – Power BI Custom Heatmap Visual
 
-![VanHeatmap Logo](assets/icon.png)
+![VanHeatmap Logo](assets/icon2.png)
 
 A **custom Power BI visual** that displays a heatmap of defects across images or layouts, ideal for tracking and visualizing defect density in manufacturing, logistics, or quality inspection scenarios.
 
