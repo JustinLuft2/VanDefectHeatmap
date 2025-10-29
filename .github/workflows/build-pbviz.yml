@@ -3,7 +3,6 @@ name: Build PBIVIZ
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
 jobs:
   build:
@@ -12,26 +11,49 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 16
-          cache: 'npm'
 
       - name: Install Power BI Visual Tools
         run: npm install -g powerbi-visuals-tools
 
-      - name: Install Project Dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build Visual
+      - name: Build .pbiviz
         run: pbiviz package
-        # If you want to overwrite existing build folder on repeat:
-        # run: pbiviz package --no-minify --overwrite
 
+      # ✅ Read installation count, increment, and expose as variable
+      - name: Read and Increment Install Count
+        id: inc
+        run: |
+          COUNT=$(cat install_count.txt)
+          NEW_COUNT=$((COUNT + 1))
+          echo $NEW_COUNT > install_count.txt
+          echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+
+      # ✅ Commit updated count back to repo so it persists
+      - name: Commit Install Counter Update
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "Github Action"
+          git add install_count.txt
+          git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
+          git push
+
+      # ✅ Rename .pbiviz using count number
+      - name: Rename PBIVIZ Output
+        run: |
+          mv dist/*.pbiviz "dist/HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
+
+      # ✅ Upload build result
       - name: Upload PBIVIZ Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: powerbi-visual-build
+          name: HeatMap_Installation
           path: dist/*.pbiviz
