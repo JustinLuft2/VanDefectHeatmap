@@ -1,4 +1,4 @@
-name: Build PBIVIZ 🎨🔥
+name: Build HeatMap File
 
 on:
   push:
