@@ -1,7 +1,7 @@
 name: HeatMap Visual Creation 🎨
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # ✅ Allows manual run only
 
 permissions:
   contents: write
@@ -47,9 +47,6 @@ jobs:
         run: pbiviz package --no-minify --verbose
         working-directory: vanHeatmap
 
-      - name: List dist folder 🔍
-        run: ls -l vanHeatmap/dist
-
       # ---------------------------------------------------------
       # 🔢 Read + Increment Install Count
       # ---------------------------------------------------------
@@ -73,42 +70,37 @@ jobs:
           if ! git diff --cached --quiet; then
             git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
             git push -f
-          else
-            echo "No changes to commit."
           fi
 
       # ---------------------------------------------------------
-      # 📂 Prepare & Commit PBIVIZ (latest only)
+      # 📂 Clear & Commit PBIVIZ Folder (latest only)
       # ---------------------------------------------------------
-      - name: Prepare & Commit PBIVIZ 📁➡️📦
+      - name: Clear & Commit PBIVIZ Folder 📁
         run: |
+          # Remove entire folder if it exists
+          rm -rf VisualDownload
           mkdir -p VisualDownload
+
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
 
-          # Find the built PBIVIZ file
+          # Get the built PBIVIZ file
           PBIVIZ_FILE=$(ls vanHeatmap/dist/*.pbiviz 2>/dev/null | head -n1)
           if [ -z "$PBIVIZ_FILE" ]; then
             echo "❌ No PBIVIZ file found! Build may have failed."
             exit 1
           fi
 
-          # Remove old PBIVIZ from Git and disk
-          git rm -f VisualDownload/*.pbiviz || true
-          rm -vf VisualDownload/*.pbiviz || true
-
-          # Move new PBIVIZ
+          # Move the PBIVIZ into the folder
           mv "$PBIVIZ_FILE" "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Stage and commit all changes
+          # Commit changes (force push to avoid remote conflicts)
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action Bot"
           git add -A VisualDownload
           if ! git diff --cached --quiet; then
             git commit -m "Update HeatMap visual ✅ (${OUTPUT_NAME})"
             git push -f
-          else
-            echo "No changes to commit."
           fi
 
       # ---------------------------------------------------------
