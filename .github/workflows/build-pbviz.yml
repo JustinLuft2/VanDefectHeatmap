@@ -63,43 +63,52 @@ jobs:
           echo "Install Count Updated: $NEW_COUNT"
 
       # ---------------------------------------------------------
-      # ♻ Commit Updated Counter (no check emoji)
+      # ♻ Commit Updated Counter
       # ---------------------------------------------------------
       - name: Commit Install Counter Update 💾
         run: |
           git config --global user.email "action@github.com"
-          git config --global user.name "Github Action Bot"
+          git config --global user.name "GitHub Action Bot"
           git add install_count.txt
-          git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
-          git push
-        continue-on-error: true
+          if ! git diff --cached --quiet; then
+            git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
+            git push
+          else
+            echo "No changes to commit."
+          fi
 
       # ---------------------------------------------------------
-      # 📂 Move & Commit PBIVIZ to Repo (latest only)
+      # 📂 Prepare & Commit PBIVIZ (latest only)
       # ---------------------------------------------------------
-      - name: Move & Commit PBIVIZ to Repo 📁➡️📦
+      - name: Prepare & Commit PBIVIZ 📁➡️📦
         run: |
           mkdir -p VisualDownload
-          echo "📥 Download heatmap here"
+          echo "📥 Preparing heatmap download..."
 
-          # Clear old .pbiviz files
-          rm -f VisualDownload/*.pbiviz
+          # Remove old PBIVIZ files from Git and disk
+          git rm -f VisualDownload/*.pbiviz || true
+          rm -vf VisualDownload/*.pbiviz || true
 
-          # Move and rename the new .pbiviz
+          # Move and rename new PBIVIZ
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
           mv vanHeatmap/dist/*.pbiviz "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Commit to repo with descriptive message
+          # Stage all changes (new + deletions)
           git config --global user.email "action@github.com"
-          git config --global user.name "Github Action Bot"
-          git add VisualDownload/*.pbiviz
-          git commit -m "Download heatmap here ✅ (${OUTPUT_NAME})"
-          git push
-        continue-on-error: true
+          git config --global user.name "GitHub Action Bot"
+          git add -A VisualDownload
+
+          # Commit and push only if there are changes
+          if ! git diff --cached --quiet; then
+            git commit -m "Update HeatMap visual ✅ (${OUTPUT_NAME})"
+            git push
+          else
+            echo "No changes to commit."
+          fi
 
       # ---------------------------------------------------------
-      # ☁ Upload artifact for backup / debugging
+      # ☁ Upload PBIVIZ Artifact for backup / debugging
       # ---------------------------------------------------------
       - name: Upload PBIVIZ Artifact ☁
         uses: actions/upload-artifact@v4
