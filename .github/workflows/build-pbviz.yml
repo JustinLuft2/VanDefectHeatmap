@@ -11,23 +11,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ---------------------------------------------------------
+      # 📥 Checkout Repo
+      # ---------------------------------------------------------
       - name: Checkout Repository 📦
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # ---------------------------------------------------------
+      # 🟢 Node Setup
+      # ---------------------------------------------------------
       - name: Set up Node 🧱
         uses: actions/setup-node@v4
         with:
           node-version: 16
 
+      # ---------------------------------------------------------
+      # 🛠 Install Power BI Visual Tools
+      # ---------------------------------------------------------
       - name: Install Power BI Visual Tools 🔧
         run: npm install -g powerbi-visuals-tools
 
+      # ---------------------------------------------------------
+      # 📦 Install Visual Dependencies
+      # ---------------------------------------------------------
       - name: Install Dependencies 📚
         run: npm install
         working-directory: vanHeatmap
 
+      # ---------------------------------------------------------
+      # 🏗 Build Power BI Visual (.pbiviz)
+      # ---------------------------------------------------------
       - name: Build .pbiviz 🏁
         run: pbiviz package --no-minify --verbose
         working-directory: vanHeatmap
@@ -35,14 +50,21 @@ jobs:
       - name: List dist folder 🔍
         run: ls -l vanHeatmap/dist
 
-      - name: Read and Increment Install Count 🔢
+      # ---------------------------------------------------------
+      # 🔢 Read + Increment Install Count
+      # ---------------------------------------------------------
+      - name: Read and Increment Install Count 🔄
         id: inc
         run: |
           COUNT=$(cat install_count.txt)
           NEW_COUNT=$((COUNT + 1))
           echo $NEW_COUNT > install_count.txt
           echo "count=$NEW_COUNT" >> $GITHUB_OUTPUT
+          echo "📊 Install Count Updated: $NEW_COUNT"
 
+      # ---------------------------------------------------------
+      # ♻ Commit Updated Counter
+      # ---------------------------------------------------------
       - name: Commit Install Counter 💾
         run: |
           git config --global user.email "action@github.com"
@@ -50,10 +72,15 @@ jobs:
           git add install_count.txt
           if ! git diff --cached --quiet; then
             git commit -m "Increment install count to ${{ steps.inc.outputs.count }}"
-            git push
+            git push -f
+          else
+            echo "No changes to commit."
           fi
 
-      - name: Prepare & Commit PBIVIZ 📂
+      # ---------------------------------------------------------
+      # 📂 Prepare & Commit PBIVIZ (latest only)
+      # ---------------------------------------------------------
+      - name: Prepare & Commit PBIVIZ 📁➡️📦
         run: |
           mkdir -p VisualDownload
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
@@ -73,15 +100,20 @@ jobs:
           mv "$PBIVIZ_FILE" "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Stage and commit
+          # Stage and commit all changes
           git config --global user.email "action@github.com"
           git config --global user.name "GitHub Action Bot"
           git add -A VisualDownload
           if ! git diff --cached --quiet; then
             git commit -m "Update HeatMap visual ✅ (${OUTPUT_NAME})"
-            git push
+            git push -f
+          else
+            echo "No changes to commit."
           fi
 
+      # ---------------------------------------------------------
+      # ☁ Upload PBIVIZ Artifact for backup / debugging
+      # ---------------------------------------------------------
       - name: Upload PBIVIZ Artifact ☁
         uses: actions/upload-artifact@v4
         with:
