@@ -15,8 +15,7 @@
     "email": "justin.luft@mercedes-benz.com"
   },
   "assets": {
-    "icon": "assets/icon.png",
-    "vanFront": "assets/van_front.png"
+    "icon": "assets/iconv2.png",
   },
   "externalJS": null,
   "style": "style/visual.less",
