@@ -1,6 +1,6 @@
 # VanHeatmap – Power BI Custom Heatmap Visual
 
-![VanHeatmap Logo](vanHeatmap/assets/icon.png)
+![VanHeatmap Logo](vanHeatmap/assets/icon2.png)
 
 A Power BI custom visual that displays defect points as a heatmap.
 
