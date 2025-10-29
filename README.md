@@ -9,7 +9,7 @@ A Power BI custom visual that displays defect points as a heatmap.
 * Heatmap of defects using colored dots.
 * Dot size, color, and glow are configurable.
 * Density-based coloring.
-* Recommended data range for best results: **5–95%** for both `x` and `y` values.
+* Recommended data range for best results: **5–95** for both `x` and `y` values.
 * Ready to use with GitHub Actions.
 
 ## Installation
