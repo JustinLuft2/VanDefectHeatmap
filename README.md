@@ -4,7 +4,6 @@
 
 A Power BI custom visual that displays defect points as a heatmap.
 
-
 Developed by Mercedes-Benz Production System.
 
 ## Features
@@ -45,3 +44,10 @@ All settings are in `visual.ts` under `config`:
 ## Contributing
 
 * Fork the repo, make changes, test locally with Power BI Desktop, then submit a pull request.
+* If you have access to the repository, create a **new branch** for your changes before working. On GitHub website:
+
+  1. Go to the repository.
+  2. Click the branch dropdown near the top-left, above the file list.
+  3. Type a new branch name and select **Create branch**.
+  4. Make your changes in this new branch.
+  5. When ready and confirmed full functionality, open a Pull Request to merge your branch into `main`.
