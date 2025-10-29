@@ -1,9 +1,8 @@
 name: HeatMap Visual Creation 🎨
 
+# Only allow manual runs
 on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch:  # ✅ Allows manual run
+  workflow_dispatch:  # ✅ Allows manual run only
 
 # Allow workflow to push back to repo
 permissions:
@@ -80,16 +79,13 @@ jobs:
       # ---------------------------------------------------------
       - name: Move & Commit PBIVIZ to Repo 📁➡️📦
         run: |
-          # Ensure folder exists
           mkdir -p VisualDownload
           echo "📥 Download heatmap here"
 
-          # Move and rename the .pbiviz
           OUTPUT_NAME="HeatMap_Installation(${{ steps.inc.outputs.count }}).pbiviz"
           mv vanHeatmap/dist/*.pbiviz "VisualDownload/$OUTPUT_NAME"
           echo "✅ Output Created: VisualDownload/$OUTPUT_NAME"
 
-          # Commit to repo with descriptive message
           git config --global user.email "action@github.com"
           git config --global user.name "Github Action Bot"
           git add VisualDownload/*.pbiviz
